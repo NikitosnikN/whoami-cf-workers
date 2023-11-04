@@ -52,3 +52,31 @@ export function extractUrlMedataFromRequest(request: Request): URLMetadata {
 export function extractIpFromRequest(request: Request): string {
 	return request.headers.get('cf-connecting-ip') || request.headers.get('x-real-ip') || '';
 }
+
+export function jsonToHtml(object: any): string {
+	function generateHtmlRecursive(data: any) {
+		let html = '';
+
+		if (typeof data === 'object') {
+			if (Array.isArray(data)) {
+				html += '<ul>';
+				data.forEach((item) => {
+					html += '<li>' + generateHtmlRecursive(item) + '</li>';
+				});
+				html += '</ul>';
+			} else {
+				html += '<ul>';
+				for (let key in data) {
+					html += '<li>' + key + ':&emsp;' + generateHtmlRecursive(data[key]) + '</li>';
+				}
+				html += '</ul>';
+			}
+		} else {
+			html += data;
+		}
+
+		return html;
+	}
+
+	return '<div>' + generateHtmlRecursive(object) + '</div>';
+}

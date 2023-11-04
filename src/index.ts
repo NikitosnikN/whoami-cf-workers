@@ -4,6 +4,7 @@ import {
 	extractMiscMetadata,
 	extractUrlMedataFromRequest,
 	extractIpFromRequest,
+	jsonToHtml,
 } from './helpers';
 import { Env, RequestMetadata } from './types';
 
@@ -18,7 +19,10 @@ async function asJsonResponse(data: RequestMetadata): Promise<Response> {
 }
 
 async function asHtmlResponse(data: RequestMetadata): Promise<Response> {
-	return new Response('not supported', {
+	const dataHtml: string = jsonToHtml(data);
+	const linkToJsonFormatHtml: string = `<a href="/?format=json">Show As JSON</a>`;
+
+	return new Response(linkToJsonFormatHtml + dataHtml, {
 		status: 200,
 		statusText: 'OK',
 		headers: {
@@ -48,7 +52,7 @@ export default {
 				response = await asHtmlResponse(data);
 				break;
 			default:
-				response = await asJsonResponse(data);
+				response = await asHtmlResponse(data);
 		}
 		return response;
 	},
